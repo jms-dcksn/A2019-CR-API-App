@@ -2,8 +2,8 @@ const request = require('request')
 
 //Return the run as user ID to be used in the bot deployment API
 
-const runAsUser = (crURL, token, userName, callback) => {
-    const url = crURL + '/v1/devices/runasusers/list'
+const bot = (crURL, token, botName, callback) => {
+    const url = crURL + '/v2/repository/workspaces/public/files/list'
     request({
         url : url,
         method :"POST",
@@ -12,22 +12,22 @@ const runAsUser = (crURL, token, userName, callback) => {
           "X-Authorization": token
         },
         body: {
-          //json body to filter based on user name provided
+          //json body to filter based on bot name provided
             'sort':[
                {
-                  'field':'username',
+                  'field':'name',
                   'direction':'asc'
                }
             ],
             'filter':{
                'operator': 'eq',
-               'field': 'username',
-               'value': userName
+               'field': 'name',
+               'value': botName
          
             },
             'fields':[],
             'page':{
-               'length':1,
+               'length':5,
                'offset':0
             }
          },
@@ -38,14 +38,13 @@ const runAsUser = (crURL, token, userName, callback) => {
         } else if (r.body.message){
             callback(body.message, undefined)
         } else if (body.list.length===0) {
-          callback('Username not found. Please try again.', undefined)
-        }else{
+          callback('Bot name not found. Please try again.', undefined)
+        } else {
             callback(undefined, {
-                userId: r.body.list[0].id,
-                device: r.body.list[0].device
+                botId: r.body.list[0].id
             })
         }
     })
 }
 
-module.exports = runAsUser
+module.exports = bot
