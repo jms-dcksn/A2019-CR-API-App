@@ -1,31 +1,34 @@
-const request = require('request')
+const axios = require('axios')
 
-//Authenticates with the Control Room and returns the JWT
 
-const auth = (crURL, userName, apiKey, callback) => {
-    const url = crURL + '/v1/authentication'
-    request({
-        url : url,
-        method :"POST",
-        headers : {
-          "content-type": "application/json",
-        },
-        body: {
-          'username':userName,
-          'password':apiKey
-        },
-        json: true
-      }, (e, r, body)=>{
-        if(e){
-            callback('Authorization failed. Please try again.', undefined)
-        } else if (r.body.message){
-            callback(body.message, undefined)
-        } else{
-            callback(undefined, {
-                token: r.body.token
-            })
-        }
-    })
+const auth = async (url, userName, password) => {
+
+  try{
+  const { data } = await axios(
+    {
+      method: 'post',
+      url: url,
+      data: {
+        username: userName,
+        password: password
+      },
+      headers : {
+        "Content-Type": "application/json",
+      }
+    });
+    if(data.message){
+      const message = data.message
+      return message
+    }
+    const token = data.token
+    return token
+  } catch (error) {
+    if (error.response.status >= 400) {
+      console.log(error.response.data.message)
+    }
+  }
+  
+
 }
 
 module.exports = auth

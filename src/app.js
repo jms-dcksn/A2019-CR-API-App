@@ -1,45 +1,38 @@
 const auth = require('./utils/auth')
 const bot = require('./utils/bot')
-const botDeploy = require('./utils/bot-deploy')
+const deploy = require('./utils/bot-deploy')
 const runAsUser = require('./utils/run-as-user')
+const axios = require('axios')
 
 var inputs = process.argv
 
 const userName = 'james.dickson.bc'
-const apiKey = '57eqPZZ!Iw#4zH'
-const runnerUser = 'james.dickson.runner'
-const crURL = 'http://localhost:80'
-const botName = 'Msg Box Test'
+const apiKey = 'jVH0oWd4irdr'
+const crURL = 'http://aaus34f1g2zxk:80/v1/authentication'
 
+const url = 'http://aaus34f1g2zxk:80/v3/automations/deploy'
+const botId = '123'
+const runAsUserId = '8'
+const poolId = '1'
+const botInput = {}
 
-auth(crURL, userName, apiKey, (error, {token}) => {
-    if (error){
-        return console.log(error)
-    }
-    
-    runAsUser(crURL, token, runnerUser, (error, {userId, device}={}) => {
-        if(error){
-            return console.log(error)
-        }
-        console.log('User ID: ' + userId)
-        console.log('Device ID: ' + device)
-
-        bot(crURL, token, botName, (error, {botId}={}) => {
-            if (error){
-                return console.log(error)
-            }
-            console.log(botId)
-
-            botDeploy(crURL, token, botId, userId, (error, {deploymentId}={}) => {
-                if(error){
-                    return console.log(error)
-                }
-                console.log(deploymentId)
-            })
-
+/* auth(crURL, userName, apiKey)
+    .then(token => {
+        deploy(url, token, '11917', '8', '1')
+        .then(deploymentId => {console.log(`Deployment ID: ${deploymentId}`)})
+        .catch(e => {
+            console.log(e)
         })
     })
-    
-})
+    .catch(e => { 
+        console.log('error')
+    }) */
 
 
+const runBot = async () => {
+    const token = await auth(crURL, userName, apiKey)
+    const deploymentId = await deploy(url, token, botId, runAsUserId, poolId, botInput)
+    console.log(deploymentId)
+}
+
+runBot()
