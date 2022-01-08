@@ -1,8 +1,8 @@
-const request = require('request')
+const axios = require('axios')
 
 //Return the run as user ID to be used in the bot deployment API
 
-const bot = (crURL, token, botName, callback) => {
+/* const bot = (crURL, token, botName, callback) => {
     const url = crURL + '/v2/repository/workspaces/public/files/list'
     request({
         url : url,
@@ -45,6 +45,54 @@ const bot = (crURL, token, botName, callback) => {
             })
         }
     })
+} */
+
+
+const bot = async (url, token, botName) => {
+  url = url + '/v2/repository/workspaces/public/files/list'
+  try{
+  const { data } = await axios(
+    {
+      method: 'post',
+      url: url,
+      data: {
+        //json body to filter based on bot name provided
+          'sort':[
+              {
+                'field':'name',
+                'direction':'asc'
+            }
+          ],
+          'filter':{
+              'operator': 'eq',
+              'field': 'name',
+              'value': botName
+          },
+          'fields':[],
+          'page':{
+              'length':5,
+              'offset':0
+          }
+      },
+      headers : {
+        "Content-Type": "application/json",
+        "X-Authorization": token
+      }
+    });
+    if(data.message){
+      const message = data.message
+      return message
+    }
+    if(data.list.length===0){
+      return "Bot name not found."
+    }
+    const botId = data.list[0].id
+    return botId
+  } catch (error) {
+    if (error.response.status >= 400) {
+      console.log(error.response.data.message)
+    }
+  }
 }
 
 module.exports = bot

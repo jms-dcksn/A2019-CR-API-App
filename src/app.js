@@ -8,10 +8,8 @@ var inputs = process.argv
 
 const userName = 'james.dickson.bc'
 const apiKey = 'jVH0oWd4irdr'
-const crURL = 'http://aaus34f1g2zxk:80/v1/authentication'
-
-const url = 'http://aaus34f1g2zxk:80/v3/automations/deploy'
-const botId = '123'
+const url = 'http://aaus34f1g2zxk:80'
+const botName = 'Msg Box'
 const runAsUserId = '8'
 const poolId = '1'
 const botInput = {}
@@ -30,7 +28,8 @@ const botInput = {}
 
 
 const runBot = async () => {
-    const token = await auth(crURL, userName, apiKey)
+    const token = await auth(url, userName, apiKey)
+    const botId = await bot(url, token, botName)
     const deploymentId = await deploy(url, token, botId, runAsUserId, poolId, botInput)
     console.log(deploymentId)
 }

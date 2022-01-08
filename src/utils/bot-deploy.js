@@ -1,6 +1,7 @@
 const axios = require('axios')
 
 const deploy = async (url, token, botId, runAsUserId, poolId, botInput) => {
+    url = url + '/v3/automations/deploy'
     try{
         const { data } = await axios(
         {

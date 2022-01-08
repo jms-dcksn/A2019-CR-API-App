@@ -2,7 +2,7 @@ const axios = require('axios')
 
 
 const auth = async (url, userName, password) => {
-
+  url = url + '/v1/authentication'
   try{
   const { data } = await axios(
     {
