@@ -1,8 +1,8 @@
-const request = require('request')
+const axios = require('axios')
 
 //Return the run as user ID to be used in the bot deployment API
 
-const runAsUser = (crURL, token, userName, callback) => {
+/* const runAsUser = (crURL, token, userName, callback) => {
     const url = crURL + '/v1/devices/runasusers/list'
     request({
         url : url,
@@ -46,6 +46,52 @@ const runAsUser = (crURL, token, userName, callback) => {
             })
         }
     })
+} */
+
+const runAsUser = async (url, token, userName) => {
+  url = url + '/v1/devices/runasusers/list'
+  try{
+  const { data } = await axios(
+    {
+      method: 'post',
+      url: url,
+      data: {
+        //json body to filter based on user name provided
+          'sort':[
+              {
+                'field':'username',
+                'direction':'asc'
+              }
+          ],
+          'filter':{
+              'operator': 'eq',
+              'field': 'username',
+              'value': userName
+          },
+          'fields':[],
+          'page':{
+              'length':1,
+              'offset':0
+          }
+        },
+      headers : {
+        "Content-Type": "application/json",
+        "X-Authorization": token
+      }
+    });
+    if(data.message){
+      const message = data.message
+      return [message, undefined]
+    }
+    if(data.list.length===0){
+      return ["Username not found.", undefined]
+    }
+    const userId = data.list[0].id
+    return [undefined, userId]
+  } catch (error) {
+      return [error.response.data.message, undefined]
+    
+  }
 }
 
 module.exports = runAsUser

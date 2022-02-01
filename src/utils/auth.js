@@ -18,17 +18,13 @@ const auth = async (url, userName, password) => {
     });
     if(data.message){
       const message = data.message
-      return message
+      return [message, undefined]
     }
     const token = data.token
-    return token
+    return [undefined, token]
   } catch (error) {
-    if (error.response.status >= 400) {
-      console.log(error.response.data.message)
-    }
+    return [error.response.data.message, undefined]
   }
-  
-
 }
 
 module.exports = auth

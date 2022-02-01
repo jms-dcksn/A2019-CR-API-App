@@ -22,14 +22,13 @@ const deploy = async (url, token, botId, runAsUserId, poolId, botInput) => {
         });
         if(data.message){
             const message = data.message
-            return message
+            return [message, undefined]
         }
         const deploymentId = data.deploymentId
-        return deploymentId
+        return [undefined, deploymentId]
     } catch (error) {
-        if (error.response.status >= 400) {
-            return error.response.data.message
-        }
+        return [error.response.data.message, undefined]
+        
     }
 }
 
